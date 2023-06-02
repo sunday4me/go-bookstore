@@ -59,15 +59,31 @@ w.WriteHeader(http.StatusOK)
 w.Write(res)
 }
 
-func updateBook(w http.ResponseWriter, r *http.Request) {
-	var updateBook := &models.Book{}
+func UpdateBook(w http.ResponseWriter, r *http.Request) {
+	var UpdateBook := &models.Book{}
 	utils.ParseBody(r, updateBook)
-	vars := mux.vars(r)
-	bookId : vars["bookId"]
+	vars := mux.Vars(r)
+	bookId := vars["bookId"]
 	ID, err := strconv.ParseInt(bookId, 0, 0)
 	if err != nil {
 		fmt.Println("error while parsing")
 
       }
+bookDetails, db := models.GetBookById(ID)
+if updateBook.Name != "" {
+	bookDetails.Name = updateBook.Name
+}
 
+if updateBook.Author != "" {
+	bookDetails.Author = updateBook.Author
+}
+if updateBook.Publication != "" {
+	bookDetails.Publication = updateBook.Publication
+    }
+
+	db.save(bookDetails)
+	res, _  := json.Marshal(bookDetails)
+	w.Header().Set("Content-Type", "pkglication/json")
+w.WriteHeader(http.StatusOK)
+w.Write(res)
 }
